@@ -17,12 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alice.androidmvvm.AndroidApplication.Companion.mainViewModel
 import com.alice.androidmvvm.model.TodoData
 import com.alice.androidmvvm.ui.theme.AndroidMvvmTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel = mainViewModel
+    @Inject lateinit var viewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

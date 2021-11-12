@@ -2,8 +2,11 @@ package com.alice.androidmvvm.data
 
 import com.alice.androidmvvm.model.TodoData
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class TodoRepositoryImpl(private val todoDao: TodoDao) : Repository<TodoData> {
+class TodoRepositoryImpl @Inject constructor(
+    private val todoDao: TodoDao
+) : Repository<TodoData> {
     override suspend fun insert(data: TodoData) = todoDao.insert(data)
 
     override suspend fun update(data: TodoData) = todoDao.update(data)

@@ -7,8 +7,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(private val todoRepository: TodoRepositoryImpl) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val todoRepository: TodoRepositoryImpl
+) : ViewModel() {
     private val scope = CoroutineScope(Dispatchers.IO)
     val todoData: Flow<List<TodoData>> = todoRepository.getData()
     val updateList = mutableMapOf<Long, TodoData>()
