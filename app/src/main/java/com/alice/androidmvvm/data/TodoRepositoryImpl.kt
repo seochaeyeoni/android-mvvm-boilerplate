@@ -1,6 +1,7 @@
 package com.alice.androidmvvm.data
 
 import com.alice.androidmvvm.model.TodoData
+import com.alice.androidmvvm.model.TodoMainData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -14,4 +15,8 @@ class TodoRepositoryImpl @Inject constructor(
     override suspend fun delete(data: TodoData) = todoDao.delete(data)
 
     override fun getData(): Flow<List<TodoData>> = todoDao.getAllData()
+
+    fun getDataForMain(): Flow<List<TodoMainData>> = todoDao.getAllDataForMain()
+
+    fun getDataFromKey(key: Int): TodoData = todoDao.getDataFromKey(key)
 }
