@@ -24,10 +24,10 @@ import com.alice.androidmvvm.ui.theme.Typography
 
 @Composable
 fun DetailScreen(date: Int, isNew: Boolean, viewModel: DetailViewModel = hiltViewModel()) {
-    viewModel.getTodoData(date)
     val todoData = viewModel.todoData.observeAsState()
     var title by rememberSaveable { mutableStateOf("") }
     var checkList by rememberSaveable { mutableStateOf(listOf<Check>()) }
+    LaunchedEffect(key1 = Unit, block = { viewModel.getTodoData(date) })
     if (todoData.value != null) {
         title = todoData.value!!.title
         checkList = todoData.value!!.checkList
