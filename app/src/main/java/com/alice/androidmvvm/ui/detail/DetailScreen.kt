@@ -14,28 +14,44 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.alice.androidmvvm.model.Check
 import com.alice.androidmvvm.model.TodoData
 import com.alice.androidmvvm.ui.theme.AndroidMvvmTheme
 import com.alice.androidmvvm.ui.theme.Typography
 
 @Composable
-fun DetailScreen(date: Int, isNew: Boolean, viewModel: DetailViewModel = hiltViewModel()) {
-    val todoData = viewModel.todoData.observeAsState()
-    var title by rememberSaveable { mutableStateOf("") }
-    var checkList by rememberSaveable { mutableStateOf(listOf<Check>()) }
-    LaunchedEffect(key1 = Unit, block = { viewModel.getTodoData(date) })
-    if (todoData.value != null) {
-        title = todoData.value!!.title
-        checkList = todoData.value!!.checkList
-    }
-    DisposableEffect(key1 = viewModel) {
+fun DetailScreen(
+    date: Int,
+    isNew: Boolean,
+    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    viewModel: DetailViewModel = hiltViewModel()
+) {
+    val todoData by viewModel.todoData.observeAsState()
+    var title by rememberSaveable { mutableStateOf(todoData?.title ?: "") }
+    var checkList by rememberSaveable { mutableStateOf(todoData?.checkList ?: listOf()) }
+    DisposableEffect(key1 = lifecycleOwner, key2 = todoData) {
+        if (todoData != null) {
+            title = todoData!!.title
+            checkList = todoData!!.checkList
+        }
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_CREATE) {
+                viewModel.getTodoData(date)
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                if (isNew) viewModel.insertTodoData(TodoData(date, title, checkList))
+                else viewModel.updateTodoData(TodoData(date, title, checkList))
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            if (isNew) viewModel.insertTodoData(TodoData(date, title, checkList))
-            else viewModel.updateTodoData(TodoData(date, title, checkList))
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 

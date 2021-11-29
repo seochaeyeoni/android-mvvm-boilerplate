@@ -14,7 +14,8 @@ data class TodoData(
     val checkList: @RawValue List<Check>
 ) : Parcelable
 
+@Parcelize
 data class Check(
     val text: String = "",
     val isChecked: Boolean = false
-)
+) : Parcelable
